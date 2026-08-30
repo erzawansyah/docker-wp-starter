@@ -85,14 +85,12 @@ services:
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
-      WP_LOCALE: ${WP_LOCALE:-id_ID}
+      WP_LOCALE: ${WP_LOCALE:-en_US}
     entrypoint:
       - /bin/sh
       - /usr/local/bin/wp-auto-install.sh
     networks:
       - wp-net
-volumes:
-  db_data:
 
 networks:
   wp-net:
