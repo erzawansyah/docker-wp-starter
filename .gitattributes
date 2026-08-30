@@ -1,0 +1,9 @@
+# Enforce LF line endings for shell scripts across all platforms
+*.sh text eol=lf
+
+# PowerShell scripts
+*.ps1 text eol=crlf
+
+# Config & Docker files
+docker-compose.yml text eol=lf
+.env.example text eol=lf
