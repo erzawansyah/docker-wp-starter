@@ -9,9 +9,13 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent || exit 1",
+        ]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -62,6 +66,7 @@ services:
     image: wordpress:cli
     container_name: ${COMPOSE_PROJECT_NAME}-auto-install
     restart: "no"
+    user: "33:33"
     depends_on:
       db:
         condition: service_healthy
@@ -69,6 +74,7 @@ services:
         condition: service_started
     volumes:
       - ./wordpress:/var/www/html
+      - ./scripts/wp-auto-install.sh:/usr/local/bin/wp-auto-install.sh:ro
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: ${DB_USER}
@@ -79,33 +85,12 @@ services:
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_LOCALE: ${WP_LOCALE:-id_ID}
     entrypoint:
       - /bin/sh
-      - -c
-      - |
-        echo "[Auto-Installer] Menunggu file wp-config.php..."
-        while [ ! -f /var/www/html/wp-config.php ]; do
-          sleep 2
-        done
-        echo "[Auto-Installer] File wp-config.php ditemukan!"
-        
-        if wp core is-installed --path=/var/www/html 2>/dev/null; then
-          echo "[Auto-Installer] WordPress sudah terinstall sebelumnya."
-        else
-          echo "[Auto-Installer] Memulai instalasi otomatis WordPress..."
-          wp core install \
-            --path=/var/www/html \
-            --url="$$WP_URL" \
-            --title="$$WP_TITLE" \
-            --admin_user="$$WP_ADMIN_USER" \
-            --admin_password="$$WP_ADMIN_PASSWORD" \
-            --admin_email="$$WP_ADMIN_EMAIL" \
-            --skip-email
-          echo "[Auto-Installer] ✅ WordPress berhasil diinstall otomatis!"
-        fi
+      - /usr/local/bin/wp-auto-install.sh
     networks:
       - wp-net
-
 volumes:
   db_data:
 
