@@ -1,52 +1,62 @@
-# WordPress Docker Starter Kit (Reproducible)
+# WordPress Docker Starter Kit (Fully Automated & Reproducible)
 
-Template Docker Compose siap pakai untuk WordPress, MariaDB, phpMyAdmin, dan WP-CLI.
+Starter kit Docker Compose yang **100% otomatis**: cukup isi `.env` dan jalankan `docker compose up -d`. Sistem di dalam container Docker akan otomatis mengurus pengecekan database, inisialisasi file, dan instalasi WordPress via WP-CLI!
+
+---
 
 ## 🚀 Cara Penggunaan
 
-### 1. Buat Proyek Baru
-
-Salin folder `wp-starter` ke folder proyek baru Anda:
-
+### 1. Salin Folder Template
+Salin folder `wp-starter` ke direktori proyek baru Anda:
 ```bash
 cp -r wp-starter my-new-project
 cd my-new-project
 ```
 
-### 2. Atur Variabel di `.env`
-
-Buka file `.env` dan sesuaikan:
-
-- `COMPOSE_PROJECT_NAME` : Nama unik proyek (contoh: `klien-a`)
-- `HTTP_PORT` : Port WordPress di browser (contoh: `8080`, `8082`, dst)
-- `PMA_PORT` : Port phpMyAdmin di browser (contoh: `8081`, `8083`, dst)
-- `WP_TITLE` : Judul website
-- `WP_ADMIN_USER` & `WP_ADMIN_PASSWORD` : Kredensial login admin WP
-
-### 3. Eksekusi Instalasi Otomatis
-
-**Di Windows (PowerShell):**
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+### 2. Atur Konfigurasi di `.env`
+Salin `.env.example` ke `.env` (jika belum ada), lalu sesuaikan variabel:
+```dotenv
+COMPOSE_PROJECT_NAME=my-new-project
+HTTP_PORT=8080
+PMA_PORT=8081
+WP_TITLE="Website Keren Saya"
+WP_URL=http://localhost:8080
+WP_ADMIN_USER=admin
+WP_ADMIN_PASSWORD=PasswordRahasia123!
+WP_ADMIN_EMAIL=admin@example.com
 ```
 
-**Di Linux / Mac / Git Bash:**
-
+### 3. Jalankan Docker Compose
+Cukup ketik satu perintah ini di terminal:
 ```bash
-chmod +x setup.sh
-./setup.sh
+docker compose up -d
 ```
+
+🎉 **Selesai!**
+Container `wp-auto-install` di dalam Docker akan otomatis:
+1. Menunggu database MariaDB sehat (*healthy*).
+2. Menunggu core file WordPress dan `wp-config.php` dibuat.
+3. Menjalankan `wp core install` secara otomatis.
+4. Berhenti dengan rapi setelah selesai tanpa membebani resource RAM/CPU.
+
+---
+
+## 🌐 Akses Layanan
+
+- **WordPress Site**: `http://localhost:<HTTP_PORT>` (contoh: `http://localhost:8080`)
+- **WordPress Admin**: `http://localhost:<HTTP_PORT>/wp-admin`
+- **phpMyAdmin**: `http://localhost:<PMA_PORT>` (contoh: `http://localhost:8081`)
 
 ---
 
 ## 🛠️ Perintah Berguna
 
-- **Menjalankan container**: `docker compose up -d`
+- **Melihat status container**: `docker compose ps`
+- **Melihat log instalasi otomatis**: `docker logs <COMPOSE_PROJECT_NAME>-auto-install`
 - **Menghentikan container**: `docker compose stop`
-- **Menghapus container (data DB tetap aman di volume)**: `docker compose down`
-- **Menjalankan perintah WP-CLI**:
-  ```powershell
-  docker compose run --rm wpcli wp plugin list
-  docker compose run --rm wpcli wp plugin install contact-form-7 --activate
+- **Menghapus container (data database & web tetap aman)**: `docker compose down`
+- **Menjalankan perintah WP-CLI manual**:
+  ```bash
+  docker compose run --rm wp-auto-install wp plugin list
+  docker compose run --rm wp-auto-install wp plugin install elementor --activate
   ```
