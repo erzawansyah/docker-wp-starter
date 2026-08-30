@@ -33,13 +33,13 @@ until docker compose exec -T db mariadb-admin ping -h localhost -u root -p"${DB_
 done
 echo "✅ Database MariaDB siap!"
 
-# 3. Tunggu file WordPress
-echo -e "\n⏳ Menunggu core file WordPress diinisialisasi..."
-until [ -f "./wordpress/wp-includes/version.php" ]; do
-    echo "   Menunggu file WordPress..."
+# 3. Tunggu file WordPress & konfigurasi siap
+echo -e "\n⏳ Menunggu core file WordPress & wp-config.php diinisialisasi..."
+until [ -f "./wordpress/wp-config.php" ]; do
+    echo "   Menunggu inisialisasi file WordPress..."
     sleep 2
 done
-echo "✅ Core file WordPress terdeteksi!"
+echo "✅ File WordPress & wp-config.php siap!"
 
 # 4. Install via WP-CLI
 echo -e "\n⚙️  Memeriksa & Menginstall WordPress via WP-CLI..."

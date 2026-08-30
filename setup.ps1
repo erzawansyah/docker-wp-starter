@@ -68,19 +68,19 @@ if (-not $dbReady) {
 
 # 4. Tunggu file WordPress di-generate oleh container WordPress
 Write-Host ""
-Write-Host "[*] Menunggu core file WordPress diinisialisasi..." -ForegroundColor Yellow
+Write-Host "[*] Menunggu core file WordPress dan wp-config.php diinisialisasi..." -ForegroundColor Yellow
 $wpCoreReady = $false
 $attempt = 0
 
 while (-not $wpCoreReady -and $attempt -lt 30) {
     Start-Sleep -Seconds 2
     $attempt++
-    if (Test-Path ".\wordpress\wp-includes\version.php") {
+    if (Test-Path ".\wordpress\wp-config.php") {
         $wpCoreReady = $true
-        Write-Host "[OK] Core file WordPress terdeteksi!" -ForegroundColor Green
+        Write-Host "[OK] File WordPress & wp-config.php terdeteksi!" -ForegroundColor Green
         break
     }
-    Write-Host "   (Percobaan $attempt/30) Menunggu file WordPress..." -ForegroundColor DarkGray
+    Write-Host "   (Percobaan $attempt/30) Menunggu inisialisasi file WordPress..." -ForegroundColor DarkGray
 }
 
 # 5. Jalankan Instalasi WordPress via WP-CLI
