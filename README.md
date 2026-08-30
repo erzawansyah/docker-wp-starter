@@ -57,6 +57,18 @@ The `wp-auto-install` container inside Docker will automatically:
 - **Remove containers (database data & web files remain safe)**: `docker compose down`
 - **Run manual WP-CLI commands**:
   ```bash
-  docker compose run --rm wp-auto-install wp plugin list
-  docker compose run --rm wp-auto-install wp plugin install elementor --activate
+  docker compose run --rm --entrypoint wp wp-auto-install plugin list
+  docker compose run --rm --entrypoint wp wp-auto-install theme install generatepress --activate
+  ```
+- **Backup WordPress (`wp-content` + Database SQL)**:
+  ```bash
+  ./scripts/wp-backup.sh
+  ```
+- **Reset Environment (Delete local database & WordPress files)**:
+  ```bash
+  # Standard reset (wordpress/ & db_data/)
+  ./scripts/wp-reset.sh
+
+  # Full reset (including backups/ & .env)
+  ./scripts/wp-reset.sh --all
   ```
